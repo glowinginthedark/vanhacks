@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import fetch from 'node-fetch'
 import LandingCategory from './components/LandingCategory/LandingCategory.js';
 import Placebutton from './components/Placebutton/Placebutton.js';
 import Placepage from './components/Placepage/Placepage.js'
@@ -32,6 +33,8 @@ export default class App extends Component {
             })
             .then((data) => {
                 this.state.data = data
+                localStorage.setItem('facilities', JSON.stringify(data));
+                
 
                 Object.keys(categories).forEach(function (item) {
                     let p = []
@@ -47,7 +50,20 @@ export default class App extends Component {
                     categories[item] = p
                 })
             }).catch(function (error) {
-                console.log(error);
+                this.state.data = localStorage.getItem("facilities") ? JSON.parse(localStorage.getItem("facilities")) : null;
+                Object.keys(categories).forEach(function (item) {
+                    let p = []
+        
+                    for (let i = 0; i < this.state.data.facilities.length; i++) {
+                        let b = this.state.data.facilities[i];
+        
+                        if (b.services.indexOf(item) > -1) {
+                            p.push(b)
+                        }
+                    }
+        
+                    categories[item] = p
+                })
         });
 
         this.categoryClick = this.categoryClick.bind(this)
